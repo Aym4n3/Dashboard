@@ -13,4 +13,21 @@ def home():
 
     return render_template('index.html')
 
+@app.route('/equipements')
+def equipements():
+
+    return render_template('equipements.html', colleges = colleges )
+@app.route('/is')
+def indicesocial():
+
+    return render_template('is.html', colleges = colleges )
+@app.route('/effectifs')
+def effectifs():
+
+    return render_template('effectifs.html', colleges = colleges )
+
+@app.route('/map')
+def carte():
+
+    return render_template('mapf.html', colleges = colleges )
 

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <select id="schoolEffectifsSelector"></select>
+    <div id="effectifsChartContainer"></div>
+
+    <script>
+        const collegesEffectifs = {{ colleges | tojson | safe }};
+        const selectorEffectifs = document.getElementById('schoolEffectifsSelector');
+
+       
+        collegesEffectifs.forEach((college) => {
+            const option = new Option(college.uai, college.uai);
+            selectorEffectifs.appendChild(option);
+        });
+
+      
+        selectorEffectifs.addEventListener('change', function() {
+            const selectedUAI = this.value;
+            const college = collegesEffectifs.find(c => c.uai === selectedUAI);
+            createEffectifsChartForCollege(college);
+        });
+
+
+        function createEffectifsChartForCollege(college) {
+            console.log("Creating effectifs chart for:", college.uai);
+
+            const effectifsChartContainer = document.getElementById('effectifsChartContainer');
+            effectifsChartContainer.innerHTML = ''; 
+            const canvas = document.createElement('canvas');
+            canvas.id = `effectifs-chart-${college.uai}`;
+            effectifsChartContainer.appendChild(canvas);
+
+            const ctx = canvas.getContext('2d');
+            const effectifsChartData = {
+                labels: ['Filles', 'Garçons'],
+                datasets: [{
+                    label: `Effectifs pour l'école UAI: ${college.uai}`,
+                    data: [
+                        parseInt(college.effectifs_filles, 10),
+                        parseInt(college.effectifs_garcons, 10)
+                    ],
+                    backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(54, 162, 235, 0.2)'],
+                    borderColor: ['rgba(255, 99, 132, 1)', 'rgba(54, 162, 235, 1)'],
+                    borderWidth: 1
+                }]
+            };
+            const effectifsChartOptions = {
+                type: 'pie',
+                data: effectifsChartData,
+                options: {
+                    scales: {
+                        yAxes: [{ ticks: { beginAtZero: true } }]
+                    },
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            };
+            new Chart(ctx, effectifsChartOptions);
+        }
+    </script>
+    <script src="{{ url_for('static', filename='effectifsScript.js') }}"></script>
+</body>
+</html>
